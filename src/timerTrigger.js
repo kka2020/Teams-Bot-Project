@@ -1,20 +1,36 @@
 const notificationTemplate = require("./adaptiveCards/notification-default.json");
 const { AdaptiveCards } = require("@microsoft/adaptivecards-tools");
 const { notificationApp } = require("./internal/initialize");
+const { NotificationTargetType } = require("@microsoft/teamsfx");
+const { teamsGetChannelId, TeamsInfo } = require("botbuilder");
 
 // Time trigger to send notification. You can change the schedule in ../timerNotifyTrigger/function.json
 module.exports = async function (context, myTimer) {
   const timeStamp = new Date().toISOString();
   for (const target of await notificationApp.notification.installations()) {
-    await target.sendAdaptiveCard(
-      AdaptiveCards.declare(notificationTemplate).render({
-        title: "New Event Occurred!",
-        appName: "Contoso App Notification",
-        description: `This is a sample time-triggered notification (${timeStamp}).`,
-        notificationUrl: "https://aka.ms/teamsfx-notification-new",
-      })
-    );
+    if (target.type === NotificationTargetType.Channel){
+      //if (target === "MSFT"){
+        await target.sendAdaptiveCard(
+          AdaptiveCards.declare(notificationTemplate).render({
+            title: "New Event Occurred!",
+            appName: "House Events Notification Bot",
+            description: `This is a sample time-triggered notification (${timeStamp}).`,
+            notificationUrl: "https://aka.ms/teamsfx-notification-new",
+          })
+        );
+      //}
+      }
   }
+
+  const channel = await notificationApp.notification.findChannel(c => Promise.resolve(c.info.name === "General"));
+  await channel?.sendAdaptiveCard(
+    AdaptiveCards.declare(notificationTemplate).render({
+      title: "Hello!",
+      appName: "House Events Notification Bot",
+      description: `This is a sample time-triggered notification (${timeStamp}).`,
+      notificationUrl: "https://aka.ms/teamsfx-notification-new",
+    })
+  )
 
   /****** To distinguish different target types ******/
   /** "Channel" means this bot is installed to a Team (default to notify General channel)

@@ -137,6 +137,20 @@
             "problemMatcher": [],
             "label": "npm: start",
             "detail": "npx func start"
+        },
+        {
+            "type": "npm",
+            "script": "start",
+            "problemMatcher": [],
+            "label": "npm: start",
+            "detail": "npx func start"
+        },
+        {
+            "type": "npm",
+            "script": "start",
+            "problemMatcher": [],
+            "label": "npm: start",
+            "detail": "npx func start"
         }
     ]
 }

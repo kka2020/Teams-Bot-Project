@@ -4,15 +4,34 @@ const { notificationApp } = require("./internal/initialize");
 
 // HTTP trigger to send notification. You need to add authentication / authorization for this API. Refer https://aka.ms/teamsfx-notification for more details.
 module.exports = async function (context, req) {
-  for (const target of await notificationApp.notification.installations()) {
-    await target.sendAdaptiveCard(
+
+  if (req.body) {
+    /**
+    for (const target of await notificationApp.notification.installations()) {
+      if (target.type === "Channel" && target.info.name === req.body.channel) {
+        await target.sendAdaptiveCard(
+          AdaptiveCards.declare(notificationTemplate).render({
+            title: req.body.title,
+            appName: "House Events Notification Bot",
+            description: String(await target.getTeamDetails().info.name),
+            notificationUrl: "https://aka.ms/teamsfx-notification-new",
+          })
+        );
+      }
+    }
+    */
+
+    const channel = await notificationApp.notification.findChannel(c => Promise.resolve(c.info.id === req.body.channel_id));
+
+    await channel?.sendAdaptiveCard(
       AdaptiveCards.declare(notificationTemplate).render({
-        title: "New Event Occurred!",
-        appName: "Contoso App Notification",
-        description: `This is a sample http-triggered notification to ${target.type}`,
+        title: req.body.title,
+        appName: "House Events Notification Bot",
+        description: "Hopefully this works...",
         notificationUrl: "https://aka.ms/teamsfx-notification-new",
       })
     );
+    
   }
 
   /****** To distinguish different target types ******/
